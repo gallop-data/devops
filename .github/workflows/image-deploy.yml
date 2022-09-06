@@ -1,0 +1,103 @@
+name: Deploy Image to Kubernetes
+
+on:
+  workflow_call:
+    inputs:
+      target_environment:
+        description: "The GCP Namespace to Deploy To"
+        required: true
+        type: string
+      image_name:
+        description: "The gcr.io/gallop-api image to deploy "
+        required: true
+        type: string
+      tag_to_deploy:
+        description: "The gcr.io/gallop-api/(image-name) image Tag to deploy"
+        required: true
+        default: "master"
+        type: string
+      replica_count:
+        description: "The number of Pod replicas to create"
+        required: true
+        type: string
+        default: "1"
+      helm_deploy_set_env_vars:
+        description: "If you have non-sensitive environment variables to pass to the deploy do it here"
+        required: false
+        default: ""
+        type: string
+    secrets:
+      GKE_SA_KEY:
+        required: true
+      GKE_CLUSTER:
+        required: true
+      HELM_DEPLOY_SET_SECRET_ENV_VARS:
+        required: false #This may be required but pass empty string?
+      
+env:
+  PROJECT_ID: gallop-api
+  GKE_ZONE: us-central1
+
+jobs:
+  ###################################
+  # Run kubectl/Helm related scripts
+  ###################################
+  reusable_image_deploy_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: GCP authentication
+        uses: google-github-actions/auth@v0.8.1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          create_credentials_file: true
+
+      - name: GKE authentication
+        uses: google-github-actions/get-gke-credentials@v0.8.0
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          credentials: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Helm Install
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+      - name: Print and Lint Helm chart
+        run: |
+          helm template ethereum-${{ inputs.aggregation_type }}-aggregator .infra \
+            -f .infra/${{ inputs.target_environment }}-values.yaml \
+            --set count=${{ inputs.replica_count }} \
+            --set image.name=${{ inputs.image_name }} \
+            --set image.tag=${{ inputs.tag_to_deploy }} \
+            ${{ inputs.helm_deploy_set_env_vars }}\
+            --set secrets=OMITTED \
+            --namespace ${{ inputs.target_environment }} \
+            --debug
+
+          helm lint .infra \
+            -f .infra/${{ inputs.target_environment }}-values.yaml \
+            --namespace ${{ inputs.target_environment }} \
+            --strict \
+            --debug
+
+      - name: Deploy Application
+        run: |
+          helm upgrade ethereum-${{ inputs.aggregation_type }}-aggregator .infra \
+            -f .infra/${{ inputs.target_environment }}-values.yaml \
+            --set count=${{ inputs.replica_count }} \
+            --set image.name=${{ inputs.image_name }} \
+            --set image.tag=${{ inputs.tag_to_deploy }} \
+            ${{ inputs.helm_deploy_set_env_vars }}\
+            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}\
+            --namespace ${{ inputs.target_environment }} \
+            --create-namespace \
+            --install \
+            --debug \
+            --wait
+
+  #test-deployment:
+  #Run some Postman Tests
