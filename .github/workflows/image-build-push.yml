@@ -45,24 +45,24 @@ jobs:
           gcloud --quiet auth configure-docker
 
       # Action Docs - https://github.com/marketplace/actions/git-semantic-version
-      - name: Increment PR Image Version
-        id: bump_version
-        if: github.event_name == 'pull_request'
-        uses: paulhatch/semantic-version@v4.0.3
-        with:
-          tag_prefix: ""
-          format: '${major}.${minor}.${patch}-${{ github.head_ref }}${increment}'
-
       - name: Increment Release Image Version
-        id: bump_version
+        id: release_bump_version
         if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         uses: paulhatch/semantic-version@v4.0.3
         with:
           tag_prefix: ""
           format: '${major}.${minor}.${patch}'
 
+      - name: Increment PR Image Version
+        id: pr_bump_version
+        if: github.event_name == 'pull_request'
+        uses: paulhatch/semantic-version@v4.0.3
+        with:
+          tag_prefix: ""
+          format: '${major}.${minor}.${patch}-${{ github.head_ref }}${increment}'
+
       - name: Increment Feature Image Version
-        id: bump_version
+        id: feature_bump_version
         if: github.ref != 'refs/heads/master' && github.event_name != 'pull_request'
         uses: paulhatch/semantic-version@v4.0.3
         with:
@@ -75,7 +75,7 @@ jobs:
             --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:latest" \
             --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:$GITHUB_SHA" \
             --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:${{ github.event_name == 'pull_request' && github.head_ref  || github.ref_name }}" \
-            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:${{ steps.bump_version.outputs.version }}" \
+            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:${{ steps.release_bump_version.outputs.version || steps.pr_bump_version.outputs.version || steps.feature_bump_version.outputs.version }}" \
             .
 
       - name: Push Image to GCR
@@ -87,6 +87,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: github.ref == 'refs/heads/master'
         with:
-          tag_name: ${{ steps.bump_version.outputs.version }}
+          tag_name: ${{ steps.release_bump_version.outputs.version || steps.pr_bump_version.outputs.version || steps.feature_bump_version.outputs.version }}
           target_commitish: ${{ github.sha }}
           generate_release_notes: true
