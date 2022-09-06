@@ -73,10 +73,10 @@ jobs:
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
             --set image.tag=${{ inputs.tag_to_deploy }} \
-            ${{ inputs.helm_deploy_set_env_vars }}\
-            --set secrets=OMITTED \
             --namespace ${{ inputs.target_environment }} \
-            --debug
+            --debug \
+            ${{ inputs.helm_deploy_set_env_vars }}
+            --set secrets=OMITTED
 
           helm lint .infra \
             -f .infra/${{ inputs.target_environment }}-values.yaml \
@@ -91,13 +91,14 @@ jobs:
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
             --set image.tag=${{ inputs.tag_to_deploy }} \
-            ${{ inputs.helm_deploy_set_env_vars }}\
-            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}\
             --namespace ${{ inputs.target_environment }} \
             --create-namespace \
             --install \
             --debug \
-            --wait
+            --wait \
+            ${{ inputs.helm_deploy_set_env_vars }}
+            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
+
 
   #test-deployment:
   #Run some Postman Tests
