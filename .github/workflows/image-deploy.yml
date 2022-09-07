@@ -75,8 +75,8 @@ jobs:
             --set image.tag=${{ inputs.tag_to_deploy }} \
             --namespace ${{ inputs.target_environment }} \
             --debug \
+            --set secrets=OMITTED \
             ${{ inputs.helm_deploy_set_env_vars }}
-            --set secrets=OMITTED
 
           helm lint .infra \
             -f .infra/${{ inputs.target_environment }}-values.yaml \
@@ -96,9 +96,9 @@ jobs:
             --install \
             --debug \
             --wait \
-            ${{ inputs.helm_deploy_set_env_vars }}
             ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
-
+            ${{ inputs.helm_deploy_set_env_vars }}
+            
 
   #test-deployment:
   #Run some Postman Tests
