@@ -11,6 +11,11 @@ on:
         description: "The gcr.io/gallop-api image to deploy "
         required: true
         type: string
+      release_suffix:
+        description: "Follows the image_name in helm release to provide uniqueness when deploying multiple configurations of the same image"
+        required: false
+        default: ""
+        type: string
       tag_to_deploy:
         description: "The gcr.io/gallop-api/(image-name) image Tag to deploy"
         required: true
@@ -68,7 +73,7 @@ jobs:
 
       - name: Print and Lint Helm chart
         run: |
-          helm template ethereum-${{ inputs.aggregation_type }}-aggregator .infra \
+          helm template ${{ inputs.image_name }}${{ inputs.release_suffix }} .infra \
             -f .infra/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
@@ -86,7 +91,7 @@ jobs:
 
       - name: Deploy Application
         run: |
-          helm upgrade ethereum-${{ inputs.aggregation_type }}-aggregator .infra \
+          helm upgrade ${{ inputs.image_name }}${{ inputs.release_suffix }}  .infra \
             -f .infra/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
