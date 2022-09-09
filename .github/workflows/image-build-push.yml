@@ -77,7 +77,7 @@ jobs:
         id: fetch_schema
         if: inputs.include_prisma
         run: |-
-          curl -LJO https://raw.githubusercontent.com/gallop-data/migrations/${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}/prisma/schema.prisma?token=${{ github.token }}
+          curl -LJ -H 'Authorization: token ${{ secrets.GHA_PRIVATE_REPO_TOKEN }}' -o ./schema.prisma  https://raw.githubusercontent.com/gallop-data/migrations/${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}/prisma/schema.prisma
         
       - name: Build Tagged Image
         run: |-
