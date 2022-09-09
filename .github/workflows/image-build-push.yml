@@ -7,6 +7,11 @@ on:
         description: "The name to give the image"
         required: true
         type: string
+      include_prisma:
+        description: "True to fetch prisma.schema from similarly named branch in migrations repo for prisma generation"
+        required: false
+        default: false
+        type: boolean
     secrets:
       GKE_SA_KEY:
         required: true
@@ -68,6 +73,12 @@ jobs:
           tag_prefix: ""
           format: '${major}.${minor}.${patch}-${{ github.ref_name }}${increment}'
 
+      - name: Download Database Prisma Schema
+        id: fetch_schema
+        if: inputs.include_prisma
+        run: |-
+          curl -LJO https://raw.githubusercontent.com/gallop-data/migrations/${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}/prisma/schema.prisma?token=${{ github.token }}
+        
       - name: Build Tagged Image
         run: |-
           docker build \
