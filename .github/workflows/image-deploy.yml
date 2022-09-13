@@ -32,7 +32,7 @@ on:
         default: ""
         type: string
       infrastructure_folder:
-        description: "If your deployment should reference a directory other than .infra, use this variable, specify the exact path with the "." (ex. ".cron_infra")"
+        description: "If your deployment should reference a directory other than .infra, use this variable, specify the exact path with the . (ex. .cron_infra)"
         required: false
         default: ".infra"
         type: string
