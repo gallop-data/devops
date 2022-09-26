@@ -31,6 +31,11 @@ on:
         required: false
         default: ""
         type: string
+      infrastructure_folder:
+        description: "If your deployment should reference a directory other than .infra, use this variable, specify the exact path with the . (ex. .cron_infra)"
+        required: false
+        default: ".infra"
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
@@ -73,8 +78,8 @@ jobs:
 
       - name: Print and Lint Helm chart
         run: |
-          helm template ${{ inputs.image_name }}${{ inputs.release_suffix }} .infra \
-            -f .infra/${{ inputs.target_environment }}-values.yaml \
+          helm template ${{ inputs.image_name }}${{ inputs.release_suffix }} ${{ inputs.infrastructure_folder }} \
+            -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
             --set image.tag=${{ inputs.tag_to_deploy }} \
@@ -83,16 +88,16 @@ jobs:
             --set secrets=OMITTED \
             ${{ inputs.helm_deploy_set_env_vars }}
 
-          helm lint .infra \
-            -f .infra/${{ inputs.target_environment }}-values.yaml \
+          helm lint ${{ inputs.infrastructure_folder }} \
+            -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --namespace ${{ inputs.target_environment }} \
             --strict \
             --debug
 
       - name: Deploy Application
         run: |
-          helm upgrade ${{ inputs.image_name }}${{ inputs.release_suffix }}  .infra \
-            -f .infra/${{ inputs.target_environment }}-values.yaml \
+          helm upgrade ${{ inputs.image_name }}${{ inputs.release_suffix }}  ${{ inputs.infrastructure_folder }} \
+            -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
             --set image.tag=${{ inputs.tag_to_deploy }} \
