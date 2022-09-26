@@ -7,6 +7,11 @@ on:
         description: "The name to give the image"
         required: true
         type: string
+      pip_authenticate:
+        description: "True to create a pip.conf file autheticated with GCP pip"
+        required: false
+        default: false
+        type: boolean
       include_prisma:
         description: "True to fetch prisma.schema from similarly named branch in migrations repo for prisma generation"
         required: false
@@ -81,6 +86,12 @@ jobs:
         run: |-
           curl -LJ -H 'Authorization: token ${{ secrets.GHA_PRIVATE_REPO_TOKEN }}' -o ./schema.prisma  https://raw.githubusercontent.com/gallop-data/migrations/${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}/prisma/schema.prisma
         
+      - name: Create Pip Configuration
+        if: inputs.pip_authenticate
+        run: |-
+          touch pip.conf
+          gcloud artifacts print-settings python --repository=whl-house --location=us --json-key=${{ steps.gcp_auth.outputs.credentials_file_path }} > pip.conf
+
       - name: Build Tagged Image
         run: |-
           docker build \
