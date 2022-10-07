@@ -43,7 +43,55 @@ on:
         required: true
       HELM_DEPLOY_SET_SECRET_ENV_VARS:
         required: false #This may be required but pass empty string?
-      
+      # Below are Repository Environment secrets we need to potentailly support
+      CLUSTER_NAME:
+        required: false
+      DB_READER_IP:
+        required: false
+      DB_WRITER_IP:
+        required: false
+      ACCOUNTS_DB_PASSWORD:
+        required: false               
+      ANALYTICS_DB_PASSWORD:
+        required: false
+      API_DB_PASSWORD:
+        required: false
+      CHARGEBEE_API_KEY:
+        required: false
+      COIN_API_KEY:
+        required: false
+      CURAGG_DB_PASSWORD:
+        required: false
+      ETHAGG_DB_PASSWORD:
+        required: false
+      ETHEREUM_API_URL:
+        required: false
+      ETHMARKETPLACE_DB_PASSWORD:
+        required: false
+      ETHSCRAPER_DB_PASSWORD:
+        required: false
+      ETHSCRIPTS_DB_PASSWORD:
+        required: false
+      INTEGRITY_DB_PASSWORD:
+        required: false               
+      MIGRATIONS_DB_PASSWORD:
+        required: false
+      MONGODB_ROOT_PASSWORD:
+        required: false
+      OVERAGES_DB_PASSWORD:
+        required: false
+      POLMARKETPLACE_DB_PASSWORD:
+        required: false
+      READONLY_DB_PASSWORD:
+        required: false
+      SKNMARKETPLACE_DB_PASSWORD:
+        required: false
+      SOLAGG_DB_PASSWORD:
+        required: false
+      SOLANA_API_URL:
+        required: false
+      SOLSCRAPER_DB_PASSWORD:
+        required: false
 env:
   PROJECT_ID: gallop-api
   GKE_ZONE: us-central1
@@ -54,6 +102,7 @@ jobs:
   ###################################
   reusable_image_deploy_job:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
