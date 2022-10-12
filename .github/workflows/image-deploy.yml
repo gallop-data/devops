@@ -117,7 +117,7 @@ jobs:
       - name: GKE authentication
         uses: google-github-actions/get-gke-credentials@v0.8.0
         with:
-          cluster_name: ${{ secrets.GKE_CLUSTER }}
+          cluster_name: ${{ secrets.GKE_CLUSTER }} #Can simplify with CLUSTER_NAME repo env secret
           location: ${{ env.GKE_ZONE }}
           credentials: ${{ secrets.GKE_SA_KEY }}
 
@@ -145,7 +145,7 @@ jobs:
 
       - name: Deploy Application
         run: |
-          helm upgrade ${{ inputs.image_name }}${{ inputs.release_suffix }}  ${{ inputs.infrastructure_folder }} \
+          helm upgrade ${{ inputs.image_name }}${{ inputs.release_suffix }} ${{ inputs.infrastructure_folder }} \
             -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
