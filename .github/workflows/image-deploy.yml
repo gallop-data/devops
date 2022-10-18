@@ -39,8 +39,6 @@ on:
     secrets:
       GKE_SA_KEY:
         required: true
-      GKE_CLUSTER:
-        required: true
       HELM_DEPLOY_SET_SECRET_ENV_VARS:
         required: false #This may be required but pass empty string?
       # Below are Repository Environment secrets we need to potentailly support
@@ -94,7 +92,6 @@ on:
         required: false
 env:
   PROJECT_ID: gallop-api
-  GKE_ZONE: us-central1
 
 jobs:
   ###################################
@@ -117,8 +114,8 @@ jobs:
       - name: GKE authentication
         uses: google-github-actions/get-gke-credentials@v0.8.0
         with:
-          cluster_name: ${{ secrets.GKE_CLUSTER }} #Can simplify with CLUSTER_NAME repo env secret
-          location: ${{ env.GKE_ZONE }}
+          cluster_name: ${{ secrets.CLUSTER_NAME }}
+          location: ${{ secrets.CLUSTER_LOCATION }}
           credentials: ${{ secrets.GKE_SA_KEY }}
 
       - name: Helm Install
