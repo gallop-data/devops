@@ -25,7 +25,6 @@ on:
       
 env:
   PROJECT_ID: gallop-api
-  GKE_ZONE: us-central1
 
 jobs:
   ###################################
