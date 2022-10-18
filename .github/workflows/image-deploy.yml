@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       image_name:
-        description: "The gcr.io/gallop-api image to deploy "
+        description: "The gcr.io/gallop-api image to deploy"
         required: true
         type: string
       release_suffix:
@@ -39,11 +39,13 @@ on:
     secrets:
       GKE_SA_KEY:
         required: true
-      HELM_DEPLOY_SET_SECRET_ENV_VARS:
-        required: false #This may be required but pass empty string?
-      # Below are Repository Environment secrets we need to potentailly support
       CLUSTER_NAME:
+        required: true
+      CLUSTER_LOCATION:
+        required: true
+      HELM_DEPLOY_SET_SECRET_ENV_VARS:
         required: false
+      # Below are Repository Environment secrets we need to potentailly support (Test with these removed)
       DB_READER_IP:
         required: false
       DB_WRITER_IP:
@@ -71,7 +73,7 @@ on:
       ETHSCRIPTS_DB_PASSWORD:
         required: false
       INTEGRITY_DB_PASSWORD:
-        required: false               
+        required: false
       MIGRATIONS_DB_PASSWORD:
         required: false
       MONGODB_ROOT_PASSWORD:
