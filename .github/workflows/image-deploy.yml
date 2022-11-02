@@ -19,7 +19,7 @@ on:
       tag_to_deploy:
         description: "The gcr.io/gallop-api/(image-name) image Tag to deploy"
         required: true
-        default: "master"
+        default: "release"
         type: string
       replica_count:
         description: "The number of Pod replicas to create"
