@@ -13,14 +13,19 @@ on:
         default: false
         type: boolean
       include_prisma:
-        description: "True to fetch prisma.schema from similarly named branch in migrations repo for prisma generation"
+        description: "True to fetch prisma.schema from migrations branch"
         required: false
         default: false
         type: boolean
+      prisma_branch:
+        description: "The migrations repo branch to fetch prisma.schema from"
+        required: false
+        default: main
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
-      GHA_PRIVATE_REPO_TOKEN:
+      GHA_PRIVATE_REPO_TOKEN: #Include when pulling Prisma schema
         required: false
       
 env:
@@ -83,7 +88,7 @@ jobs:
         id: fetch_schema
         if: inputs.include_prisma
         run: |-
-          curl -LJ -H 'Authorization: token ${{ secrets.GHA_PRIVATE_REPO_TOKEN }}' -o ./schema.prisma  https://raw.githubusercontent.com/gallop-data/migrations/${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}/prisma/schema.prisma
+          curl -LJ -H 'Authorization: token ${{ secrets.GHA_PRIVATE_REPO_TOKEN }}' -o ./schema.prisma  https://raw.githubusercontent.com/gallop-data/migrations/${{ inputs.prisma_branch }}/prisma/schema.prisma
         
       - name: Create Pip Configuration
         if: inputs.pip_authenticate
