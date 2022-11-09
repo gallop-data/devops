@@ -20,23 +20,11 @@ jobs:
       - run: echo inputs.execute evaluated true
         if: github.event_name != 'workflow_dispatch' || inputs.execute
 
-      - run: echo github.event.inputs.execute evaluated true
-        if: github.event_name != 'workflow_dispatch' || github.event.inputs.execute
-
-      - run: echo inputs.execute == 'true' evaluated true
-        if: github.event_name != 'workflow_dispatch' || inputs.execute == 'true'
-
       - run: echo github.event.inputs.execute == 'true' evaluated true
         if: github.event_name != 'workflow_dispatch' || github.event.inputs.execute == 'true'
 
       - run: echo inputs.execute in expression evaluated true
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.execute }}
-
-      - run: echo github.event.inputs.execute in expression evaluated true
-        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.execute }}
-
-      - run: echo inputs.execute == 'true' in expression evaluated true
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.execute == 'true' }}
 
       - run: echo github.event.inputs.execute == "true" in expression evaluated true
         if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.execute == 'true' }}
