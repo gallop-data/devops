@@ -1,0 +1,32 @@
+name: How to If
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+       description: 'Whether to run the Refresh step prior to previews'
+       required: true
+       default: true
+       type: boolean
+
+  push:
+    branches:
+      - main
+
+jobs:
+  test-conditionals:
+    name: If permutations
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo inputs.execute evaluated true
+        if: inputs.execute
+
+      - run: echo github.event.inputs.execute evaluated true
+        if: github.event.inputs.execute
+
+      - run: echo inputs.execute == "true" evaluated true
+        if: inputs.execute == "true"
+
+      - run: echo github.event.inputs.execute == "true" evaluated true
+        if: github.event.inputs.execute == "true"
+
+
