@@ -1,0 +1,50 @@
+name: Wheel and Push Docker Image
+
+on:
+  workflow_call:
+    secrets:
+      GKE_SA_KEY:
+        required: true
+      
+env:
+  PROJECT_ID: gallop-api
+
+jobs:
+  ###################################
+  # Run Docker build and push
+  ###################################
+  wheel-build-push:
+    name: Wheel Build & Push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for version increment
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: GCP authentication
+        id: gcp_auth
+        uses: google-github-actions/auth@v0.8.1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          create_credentials_file: true
+
+      - name: Create Pip Configuration
+        run: |-
+          mkdir -p ~/.config/pip/ && touch ~/.config/pip/pip.conf
+          gcloud artifacts print-settings python --repository=whl-house --location=us --json-key=${{ steps.gcp_auth.outputs.credentials_file_path }} > ~/.pypirc 
+          gcloud artifacts print-settings python --repository=whl-house --location=us --json-key=${{ steps.gcp_auth.outputs.credentials_file_path }} > ~/.config/pip/pip.conf
+
+      - name: Install Requirements
+        run: |-
+          pip install -r ./requirements.txt
+
+      - name: Build and Push Wheel to GAR
+        run: |-
+          git config --global user.email "pipelines@higallop.com"
+          git config --global user.name "GitHub Actions"       
+          semantic-release publish --verbosity=DEBUG --define="branch=${{ (github.event_name == 'pull_request' && github.head_ref) || github.ref_name }}" --${{ github.event.inputs.version_bump || 'patch' }} ${{ (github.event_name == 'pull_request' && '--prerelease -D prerelease_tag=beta') || '' }}
