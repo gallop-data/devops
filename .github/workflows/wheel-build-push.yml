@@ -2,6 +2,11 @@ name: Build and Push Python Wheel
 
 on:
   workflow_call:
+    inputs:
+      version_bump:
+        description: "The version portion to increment"
+        required: true
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
