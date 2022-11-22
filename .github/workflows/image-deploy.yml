@@ -36,6 +36,11 @@ on:
         required: false
         default: ".infra"
         type: string
+      timeout:
+        description: "The time helm will wait for all requested replicas to be healthy"
+        required: false
+        default: "5m"
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
@@ -150,6 +155,7 @@ jobs:
             --set image.name=${{ inputs.image_name }} \
             --set image.tag=${{ inputs.tag_to_deploy }} \
             --namespace ${{ inputs.target_environment }} \
+            --timeout ${{ inputs.timeout }} \
             --create-namespace \
             --install \
             --debug \
