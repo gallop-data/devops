@@ -55,11 +55,17 @@ on:
         required: false
       DB_WRITER_IP:
         required: false
+      TRAIL_DB_READER_IP:
+        required: false
+      TRAIL_DB_WRITER_IP:
+        required: false
       ACCOUNTS_DB_PASSWORD:
         required: false               
       ANALYTICS_DB_PASSWORD:
         required: false
       API_DB_PASSWORD:
+        required: false
+      RWAAPI_DB_PASSWORD:
         required: false
       CHARGEBEE_API_KEY:
         required: false
@@ -68,6 +74,8 @@ on:
       CURAGG_DB_PASSWORD:
         required: false
       ETHAGG_DB_PASSWORD:
+        required: false
+      RWAAGG_DB_PASSWORD:
         required: false
       ETHEREUM_API_URL:
         required: false
@@ -81,6 +89,8 @@ on:
         required: false
       MIGRATIONS_DB_PASSWORD:
         required: false
+      MIGRATION_DB_PASSWORD:
+          required: false
       MONGODB_ROOT_PASSWORD:
         required: false
       OVERAGES_DB_PASSWORD:
