@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { .Release.Name } }
+spec:
+  selector:
+    matchLabels:
+      app: { { .Release.Name } }
+  replicas: { { .Values.count | default 4 } }
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      annotations:
+        checksum/env-vars:
+          {
+            {
+              include (print $.Template.BasePath "/env-vars-config-map.yaml") . | sha256sum,
+            },
+          }
+        checksum/sensitive-env-vars:
+          {
+            {
+              include (print $.Template.BasePath "/env-vars-secret.yaml") . | sha256sum,
+            },
+          }
+      labels:
+        app: { { .Release.Name } }
+    spec:
+      nodeSelector:
+        role: main # TODO Match this with what cluster nodes pools are deployed
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: { { .Release.Name } }
+          image:
+            {
+              {
+                print "gcr.io/triple-344119/" .Values.image.name ":" .Values.image.tag,
+              },
+            }
+          imagePullPolicy: "IfNotPresent"
+          resources:
+            requests:
+              cpu: { { .Values.cpu } }
+              memory: { { .Values.memory } }
+            limits:
+              cpu: { { .Values.maxCpu } }
+              memory: { { .Values.maxMemory } }
+          envFrom:
+            - secretRef:
+                name: { { print .Release.Name "-sensitive-vars" } }
+            - configMapRef:
+                name: { { print .Release.Name "-vars" } }
+          ports:
+            - containerPort: { { .Values.image.port } }
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: { { .Values.image.port } }
+            initialDelaySeconds: 10
+            periodSeconds: 2
+            failureThreshold: 2
+            successThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: { { .Values.image.port } }
+            initialDelaySeconds: 10
+            periodSeconds: 5

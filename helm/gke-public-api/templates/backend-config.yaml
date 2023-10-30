@@ -1,0 +1,17 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ print .Release.Name "-backend-config" }}
+spec:
+  cdn:
+    enabled: false
+  timeoutSec: 600
+  connectionDraining:
+    drainingTimeoutSec: 60
+  logging:
+    enable: true
+    sampleRate: 1
+  sessionAffinity:
+    affinityType: "CLIENT_IP"
+  securityPolicy:
+    name: {{ print .Values.environment "-cluster-rate-limiting-security-policy" }}

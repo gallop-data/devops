@@ -1,0 +1,15 @@
+image:
+  tag: main
+  port: 3000
+environment: example
+cpu: 100m
+memory: 256Mi
+maxCpu: 500m
+maxMemory: 1Gi
+ingress:
+  host: lobby.example.cambria.gg
+minPods: 1
+maxPods: 3
+env_vars:
+  NODE_ENV: development
+  ORIGIN: "*"

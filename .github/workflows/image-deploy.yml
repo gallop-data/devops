@@ -4,11 +4,11 @@ on:
   workflow_call:
     inputs:
       target_environment:
-        description: "The GCP Namespace to Deploy To"
+        description: "The GKE Namespace to Deploy To"
         required: true
         type: string
       image_name:
-        description: "The gcr.io/gallop-api image to deploy"
+        description: "The gcr.io repo image to deploy"
         required: true
         type: string
       release_suffix:
@@ -17,7 +17,7 @@ on:
         default: ""
         type: string
       tag_to_deploy:
-        description: "The gcr.io/gallop-api/(image-name) image Tag to deploy"
+        description: "The gcr.io repo image tag to deploy"
         required: true
         default: "release"
         type: string
@@ -31,7 +31,7 @@ on:
         required: false
         default: ""
         type: string
-      infrastructure_folder:
+      infrastructure_folder: # TODO Convert this to use helm folders properly
         description: "If your deployment should reference a directory other than .infra, use this variable, specify the exact path with the . (ex. .cron_infra)"
         required: false
         default: ".infra"
@@ -50,65 +50,8 @@ on:
         required: true
       HELM_DEPLOY_SET_SECRET_ENV_VARS:
         required: false
-      # Below are Repository Environment secrets we need to potentailly support (Test with these removed)
-      DB_READER_IP:
-        required: false
-      DB_WRITER_IP:
-        required: false
-      TRAIL_DB_READER_IP:
-        required: false
-      TRAIL_DB_WRITER_IP:
-        required: false
-      ACCOUNTS_DB_PASSWORD:
-        required: false               
-      ANALYTICS_DB_PASSWORD:
-        required: false
-      API_DB_PASSWORD:
-        required: false
-      RWAAPI_DB_PASSWORD:
-        required: false
-      CHARGEBEE_API_KEY:
-        required: false
-      COIN_API_KEY:
-        required: false
-      CURAGG_DB_PASSWORD:
-        required: false
-      ETHAGG_DB_PASSWORD:
-        required: false
-      RWAAGG_DB_PASSWORD:
-        required: false
-      ETHEREUM_API_URL:
-        required: false
-      ETHMARKETPLACE_DB_PASSWORD:
-        required: false
-      ETHSCRAPER_DB_PASSWORD:
-        required: false
-      ETHSCRIPTS_DB_PASSWORD:
-        required: false
-      INTEGRITY_DB_PASSWORD:
-        required: false
-      MIGRATIONS_DB_PASSWORD:
-        required: false
-      MIGRATION_DB_PASSWORD:
-          required: false
-      MONGODB_ROOT_PASSWORD:
-        required: false
-      OVERAGES_DB_PASSWORD:
-        required: false
-      POLMARKETPLACE_DB_PASSWORD:
-        required: false
-      READONLY_DB_PASSWORD:
-        required: false
-      SKNMARKETPLACE_DB_PASSWORD:
-        required: false
-      SOLAGG_DB_PASSWORD:
-        required: false
-      SOLANA_API_URL:
-        required: false
-      SOLSCRAPER_DB_PASSWORD:
-        required: false
 env:
-  PROJECT_ID: gallop-api
+  PROJECT_ID: triple-344119
 
 jobs:
   ###################################
@@ -119,17 +62,17 @@ jobs:
     environment: ${{ inputs.target_environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: GCP authentication
         uses: google-github-actions/auth@v1
-        with:
+        with: # TODO We should be using Workload identities for better security, get the cluster to support that
           credentials_json: ${{ secrets.GKE_SA_KEY }}
           project_id: ${{ env.PROJECT_ID }}
           create_credentials_file: true
 
       - name: GKE authentication
-        uses: google-github-actions/get-gke-credentials@v0
+        uses: google-github-actions/get-gke-credentials@v1
         with:
           cluster_name: ${{ secrets.CLUSTER_NAME }}
           location: ${{ secrets.CLUSTER_LOCATION }}
@@ -172,7 +115,3 @@ jobs:
             --wait \
             ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
             ${{ inputs.helm_deploy_set_env_vars }}
-            
-
-  #test-deployment:
-  #Run some Postman Tests

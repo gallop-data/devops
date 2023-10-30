@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+    cloud.google.com/backend-config: {{ print  "'{\"default\": \"" .Release.Name "-backend-config\"}'" }}
+spec:
+  selector:
+    app: {{ .Release.Name }}
+  type: LoadBalancer
+  ports:
+  - port: 80
+    name: http
+    protocol: TCP
+    targetPort: {{ .Values.image.port }}

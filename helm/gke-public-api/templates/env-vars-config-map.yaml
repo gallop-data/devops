@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{print .Release.Name "-vars" }}
+data:
+  {{- range $key, $val := .Values.env_vars }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end}}
