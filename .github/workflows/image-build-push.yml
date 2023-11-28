@@ -46,7 +46,7 @@ jobs:
       - name: Increment Release Image Version
         id: release_bump_version
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        uses: paulhatch/semantic-version@v5
+        uses: paulhatch/semantic-version@v5.3.0
         with:
           tag_prefix: ""
           format: "${major}.${minor}.${patch}"
