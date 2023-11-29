@@ -7,6 +7,10 @@ on:
         description: "The name to give the image"
         required: true
         type: string
+      project_id:
+        description: "The name of the GCP project"
+        required: true
+        type: string
     secrets:
       GKE_SA_KEY:
         required: true
