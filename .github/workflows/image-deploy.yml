@@ -115,5 +115,5 @@ jobs:
             --install \
             --debug \
             --wait \
-            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
+            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }} \
             ${{ inputs.helm_deploy_set_env_vars }}
