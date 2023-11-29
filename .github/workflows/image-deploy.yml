@@ -104,12 +104,6 @@ jobs:
 
       - name: Deploy Application
         run: |
-          echo "Checking if secret is set..."
-          if [ -z "${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}" ]; then
-            echo "Secret is not set!"
-          else
-            echo "Secret is set."
-          fi
           helm upgrade ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} \
             -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
