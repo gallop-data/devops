@@ -86,7 +86,7 @@ jobs:
 
       - name: Print and Lint Helm chart
         run: |
-          helm template ${{ inputs.image_name }}${{ inputs.release_suffix }} ${{ inputs.infrastructure_folder }} \
+          helm template ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} \
             -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
             --set image.name=${{ inputs.image_name }} \
