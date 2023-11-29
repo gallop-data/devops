@@ -38,7 +38,7 @@ spec:
           image:
             {
               {
-                print "gcr.io/triple-344119/" .Values.image.name ":" .Values.image.tag,
+                print "gcr.io/${{ inputs.project_id }}/" .Values.image.name ":" .Values.image.tag,
               },
             }
           imagePullPolicy: "IfNotPresent"
