@@ -105,7 +105,7 @@ jobs:
       - name: Deploy Application
         run: |
           echo "Checking if secret is set..."
-          if [ -z "${{ secrets.ACCOUNTS_DB_PASSWORD }}" ]; then
+          if [ -z "${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}" ]; then
             echo "Secret is not set!"
           else
             echo "Secret is set."
