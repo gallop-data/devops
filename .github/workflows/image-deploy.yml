@@ -118,6 +118,6 @@ jobs:
         #     ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
         #     ${{ inputs.helm_deploy_set_env_vars }}
         run: |
-          helm upgrade ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} --create-namespace --install --debug --wait
+          helm upgrade ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml --create-namespace --install --debug --wait
             ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }}
             ${{ inputs.helm_deploy_set_env_vars }}
