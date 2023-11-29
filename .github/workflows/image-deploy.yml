@@ -93,7 +93,6 @@ jobs:
             --set image.tag=${{ inputs.tag_to_deploy }} \
             --namespace ${{ inputs.target_environment }} \
             --debug \
-            --set secrets=OMITTED \
             ${{ inputs.helm_deploy_set_env_vars }}
 
           helm lint ${{ inputs.infrastructure_folder }} \
