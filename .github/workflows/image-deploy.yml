@@ -102,14 +102,16 @@ jobs:
             --strict \
             --debug
 
-      - name: Deploy Application
+      - name: TEST VARIABLE
         run: |
           echo "Checking if secret is set..."
-          if [ -z "${{ secrets.MY_SECRET }}" ]; then
+          if [ -z "${{ secrets.FIREBASE_SA }}" ]; then
             echo "Secret is not set!"
           else
             echo "Secret is set."
           fi
+
+      - name: Deploy Application
         run: |
           helm upgrade ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} \
             -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
