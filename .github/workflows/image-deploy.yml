@@ -111,4 +111,5 @@ jobs:
             --set image.tag=${{ inputs.tag_to_deploy }} \
             --namespace ${{ inputs.target_environment }} \
             --timeout ${{ inputs.timeout }} \
+            ${{ secrets.HELM_DEPLOY_SET_SECRET_ENV_VARS }} \
             ${{ inputs.helm_deploy_set_env_vars }}
