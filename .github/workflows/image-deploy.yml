@@ -11,6 +11,10 @@ on:
         description: "The gcr.io repo image to deploy"
         required: true
         type: string
+      project_id:
+        description: "The name of the GCP project"
+        required: true
+        type: string
       release_suffix:
         description: "Follows the image_name in helm release to provide uniqueness when deploying multiple configurations of the same image"
         required: false
@@ -50,8 +54,6 @@ on:
         required: true
       HELM_DEPLOY_SET_SECRET_ENV_VARS:
         required: false
-env:
-  PROJECT_ID: triple-344119
 
 jobs:
   ###################################
@@ -68,7 +70,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with: # TODO We should be using Workload identities for better security, get the cluster to support that
           credentials_json: ${{ secrets.GKE_SA_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ inputs.project_id }}
           create_credentials_file: true
 
       - name: GKE authentication
