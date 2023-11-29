@@ -105,7 +105,7 @@ jobs:
       - name: TEST VARIABLE
         run: |
           echo "Checking if secret is set..."
-          if [ -z "${{ secrets.PIPEDRIVE_API_KEY }}" ]; then
+          if [ -z "${{ inputs.target_environment }}" ]; then
             echo "Secret is not set!"
           else
             echo "Secret is set."
