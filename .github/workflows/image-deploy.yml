@@ -102,7 +102,7 @@ jobs:
             --strict \
             --debug
 
-      - name: TEST VARIABLE
+      - name: Deploy Application
         run: |
           echo "Checking if secret is set..."
           if [ -z "${{ secrets.ACCOUNTS_DB_PASSWORD }}" ]; then
@@ -110,9 +110,6 @@ jobs:
           else
             echo "Secret is set."
           fi
-
-      - name: Deploy Application
-        run: |
           helm upgrade ${{ inputs.image_name }} ${{ inputs.infrastructure_folder }} \
             -f ${{ inputs.infrastructure_folder }}/${{ inputs.target_environment }}-values.yaml \
             --set count=${{ inputs.replica_count }} \
