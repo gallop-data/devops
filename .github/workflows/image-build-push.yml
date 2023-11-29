@@ -11,9 +11,6 @@ on:
       GKE_SA_KEY:
         required: true
 
-env:
-  PROJECT_ID: triple-344119 # TODO Replace with config in pipelines and helm charts
-
 jobs:
   ###################################
   # Run Docker build and push
@@ -35,7 +32,7 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GKE_SA_KEY }}
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ inputs.project_id }}
           create_credentials_file: true
 
       - name: GCR Login
@@ -70,15 +67,15 @@ jobs:
       - name: Build Tagged Image
         run: |-
           docker build \
-            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:latest" \
-            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:$GITHUB_SHA" \
-            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:${{ github.event_name == 'pull_request' && github.head_ref  || github.ref_name }}" \
-            --tag "gcr.io/$PROJECT_ID/${{ inputs.image_name }}:${{ steps.release_bump_version.outputs.version || steps.pr_bump_version.outputs.version || steps.feature_bump_version.outputs.version }}" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:latest" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:$GITHUB_SHA" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:${{ github.event_name == 'pull_request' && github.head_ref  || github.ref_name }}" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:${{ steps.release_bump_version.outputs.version || steps.pr_bump_version.outputs.version || steps.feature_bump_version.outputs.version }}" \
             .
 
       - name: Push Image to GCR
         run: |-
-          docker push "gcr.io/$PROJECT_ID/${{ inputs.image_name }}" --all-tags
+          docker push "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}" --all-tags
 
       # Action Docs - https://github.com/softprops/action-gh-release
       - name: Create GitHub Release
