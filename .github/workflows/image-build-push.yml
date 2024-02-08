@@ -50,7 +50,7 @@ jobs:
         uses: paulhatch/semantic-version@v5.4.0
         with:
           tag_prefix: ""
-          format: "${major}.${minor}.${patch}"
+          version_format: "${major}.${minor}.${patch}"
 
       - name: Increment PR Image Version
         id: pr_bump_version
@@ -58,7 +58,7 @@ jobs:
         uses: paulhatch/semantic-version@v5.4.0
         with:
           tag_prefix: ""
-          format: "${major}.${minor}.${patch}-${{ github.head_ref }}${increment}"
+          version_format: "${major}.${minor}.${patch}-${{ github.head_ref }}${increment}"
 
       - name: Increment Feature Image Version
         id: feature_bump_version
@@ -66,7 +66,7 @@ jobs:
         uses: paulhatch/semantic-version@v5.4.0
         with:
           tag_prefix: ""
-          format: "${major}.${minor}.${patch}-${{ github.ref_name }}${increment}"
+          version_format: "${major}.${minor}.${patch}-${{ github.ref_name }}${increment}"
 
       - name: Build Tagged Image
         run: |-
