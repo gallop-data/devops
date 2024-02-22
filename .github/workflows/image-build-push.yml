@@ -76,18 +76,19 @@ jobs:
         id: set_tag
         run: echo "TAG=${{ steps.release_bump_version.outputs.version || steps.pr_bump_version.outputs.version || steps.feature_bump_version.outputs.version }}" >> $GITHUB_ENV
 
-      - name: Build Tagged Image
+      - name: Build Tagged Image (default command)
+        if: inputs.build_command == ''
         run: |
-          if [ -z "${{ inputs.build_command }}" ]; then
-            docker build \
-              --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:latest" \
-              --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:$GITHUB_SHA" \
-              --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:${{ github.event_name == 'pull_request' && github.head_ref  || github.ref_name }}" \
-              --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:$TAG" \
-              .
-          else
-            ${{ inputs.build_command }}
-          fi
+          docker build \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:latest" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:$GITHUB_SHA" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:${{ github.event_name == 'pull_request' && github.head_ref  || github.ref_name }}" \
+            --tag "gcr.io/${{ inputs.project_id }}/${{ inputs.image_name }}:$TAG" \
+            .
+
+      - name: Build Tagged Image (custom command)
+        if: inputs.build_command != ''
+        run: ${{ inputs.build_command }}
 
       - name: Push Image to GCR
         run: |-
